@@ -14,18 +14,15 @@ end
 
 Chef::Log.info("******Installing apache (httpd).******")
 package 'httpd' do
-  user: sudo
   action :install
 end
 
 package 'httpd-devel' do
-  user: sudo
   action :install
 end
 
 Chef::Log.info("******Enable and start httpd.******")
 service 'httpd' do
-  user: sudo
   action [ :enable, :start ]
 end
 
@@ -36,68 +33,55 @@ cookbook_file '/var/www/html/index.html' do
 end
 
 package "python27" do
-  user: sudo
   action :install
 end
 
 package "python27-devel" do
-  user: sudo
   action :install
 end
 
 package "gcc" do
-  user: sudo
   action :install
 end
 
 
 package "gcc-c++" do
-  user: sudo
   action :install
 end
 
 package "subversion" do
-  user: sudo
   action :install
 end
 
 package "make" do
-  user: sudo
   action :install
 end
 
 package "uuid" do
-  user: sudo
   action :install
 end
 
 package "libuuid-devel" do
-  user: sudo
   action :install
 end
 
 package "python-devel" do
-  user: sudo
   action :install
 end
 
 package "python27-devel" do
-  user: sudo
   action :install
 end
 
 package "make" do
-  user: sudo
   action :install
 end
 
 package "postgresql93" do
-  user: sudo
   action :install
 end
 
 package "postgresql93-devel" do
-  user: sudo
   action :install
 end
 
