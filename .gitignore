@@ -1,6 +1,20 @@
-Berksfile.lock
-*.gem
-*.rbc
-opsworks-cookbooks
+*~
+*#
+.#*
+\#*#
+.*.sw[a-z]
+*.un~
+pkg/
+
+# Berkshelf
 .vagrant
-.berkshelf
+/cookbooks
+Berksfile.lock
+
+# Bundler
+Gemfile.lock
+bin/*
+.bundle/*
+
+.kitchen/
+.kitchen.local.yml
