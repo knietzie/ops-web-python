@@ -101,11 +101,3 @@ package "postgresql93-devel" do
   action :install
 end
 
-#yum install python27 python27-devel gcc gcc-c++ subversion git httpd make uuid libuuid-devel
-#yum install httpd-devel
-#ams apps requirements
-#yum install python-devel python27-devel nginx git make postgresql93 postgresql93-devel
-#yum install python27 python27-devel gcc gcc-c++ subversion git httpd make uuid libuuid-devel
-#yum install httpd-devel
-
-
