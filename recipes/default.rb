@@ -1,7 +1,7 @@
 Chef::Log.info("******Creating a data directory.******")
 
 data_dir = value_for_platform(
-  "centos" => { "default" => "/srv/www/shared" },
+  "amazon" => { "default" => "/srv/www/shared" },
   "ubuntu" => { "default" => "/srv/www/data" },
   "default" => "/srv/www/config"
 )
