@@ -23,8 +23,9 @@ bash 'update_and_install' do
   user "root"
   cwd "/tmp" 
   code <<-EOH
-    yum update
-    yum install httpd httpd-devel python27 python27-devel gcc gcc-c++ subversion git httpd make uuid libuuid -devel install httpd-devel python-devel python27-devel nginx git make postgresql93 postgresql93-devel
+    #yum update -y
+    yum install -y  httpd httpd-devel
+    #yum install httpd httpd-devel python27 python27-devel gcc gcc-c++ subversion git httpd make uuid libuuid -devel install httpd-devel python-devel python27-devel nginx git make postgresql93 postgresql93-devel
     EOH
 end
 
