@@ -13,14 +13,23 @@ directory data_dir do
   action :create
 end
 
-bash 'update_and_install' do
+
+Chef::Log.info("******Installing container application******")
+bash 'install' do
   user "root"
   cwd "/tmp" 
   code <<-EOH
-    #yum update 
-    yum -y install httpd httpd-devel python python27-devel python-pip make git postgresql93 postgresql93-devel
+    yum update 
+    yum -y install httpd httpd-devel python python27-devel make git postgresql93 postgresql93-devel epel-release
     EOH
+end
 
+execute "install EPEL" do
+    command "rpm -i --force http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
+end
+
+execute "install python-pip" do
+    command "yum -y install python-pip"
 end
 
 Chef::Log.info("******Copying from index.html from cookbook.******")
@@ -29,12 +38,11 @@ cookbook_file '/var/www/html/index.html' do
    mode '0644'
 end
 
-
-
 Chef::Log.info("******Enable and start httpd.******")
 service 'httpd' do
   action [ :enable, :start ]
 end
+
 
 
 
