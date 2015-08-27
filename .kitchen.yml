@@ -2,14 +2,46 @@
 driver:
   name: vagrant
 
+  # #Tesing instance 
+  # name: ec2
+  # aws_ssh_key_id: 
+  # ssh_key: ../ec2_keys/US-East1.pem
+  # region: us-east-1
+  # availability_zone: us-east-1c
+  # require_chef_omnibus: true
+
 provisioner:
   name: chef_solo
 
 platforms:
   - name: centos-6.5
 
+  ## amazon instance connection
+  # - name: amazon
+  #   driver:
+  #     image_id: ami-acd9e8fe
+  #     username: ec2-user
+
 suites:
   - name: default
     run_list:
       - recipe[ops-web-python::default]
     attributes:
+
+
+
+# --- 
+# driver:
+#   name: ec2
+#   aws_ssh_key_id: testkey
+#   ssh_key: /Users/knietzie/.ssh/testkey.pem
+#   region: us-east-1
+#   availability_zone: ap-southeast-1a
+#   require_chef_omnibus: true
+# provisioner:
+#   name: chef_solo
+# platforms:
+#   - name: amazon
+#     driver:
+#       image_id: ami-ed8e9284
+#       username: ec2-user
