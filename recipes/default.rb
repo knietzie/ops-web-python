@@ -1,5 +1,4 @@
-Chef::Log.info("******Creating a data directory.******")
-
+Chef::Log.info("******Creating deploymeny directory.******")
 data_dir = value_for_platform(
   "amazon" => { "default" => "/srv/www" },
   "centos" => { "default" => "/srv/www" }
@@ -32,7 +31,7 @@ execute "install python-pip" do
     command "yum -y install python-pip"
 end
 
-Chef::Log.info("******Copying from index.html from cookbook.******")
+Chef::Log.info("******Copying from index.html to replace standard http welcome pag.******")
 cookbook_file '/var/www/html/index.html' do
    source 'index.html'
    mode '0644'
