@@ -2,13 +2,13 @@
 driver:
   name: vagrant
 
-  # #Tesing instance 
-  # name: ec2
-  # aws_ssh_key_id: 
-  # ssh_key: ../ec2_keys/US-East1.pem
-  # region: us-east-1
-  # availability_zone: us-east-1c
-  # require_chef_omnibus: true
+  #Amazon tesing instance CUMULUS 
+  #name: ec2
+  #aws_ssh_key_id: testkey
+  #ssh_key: /Users/knietzie/.ssh/testkey.pem
+  #region: ap-southeast-1
+  #availability_zone: ap-southeast-1a
+  #require_chef_omnibus: true
 
 provisioner:
   name: chef_solo
@@ -17,10 +17,10 @@ platforms:
   - name: centos-6.5
 
   ## amazon instance connection
-  # - name: amazon
-  #   driver:
-  #     image_id: ami-acd9e8fe
-  #     username: ec2-user
+  #- name: amazon
+  #  driver:
+  #    image_id: ami-acd9e8fe
+  #    username: ec2-user
 
 suites:
   - name: default
@@ -35,7 +35,7 @@ suites:
 #   name: ec2
 #   aws_ssh_key_id: testkey
 #   ssh_key: /Users/knietzie/.ssh/testkey.pem
-#   region: us-east-1
+#   region: ap-southeast-1
 #   availability_zone: ap-southeast-1a
 #   require_chef_omnibus: true
 # provisioner:
@@ -45,3 +45,19 @@ suites:
 #     driver:
 #       image_id: ami-ed8e9284
 #       username: ec2-user
+
+# CUMULUS details
+#    ######  OpsWorks Summary  ######
+#    Operating System: Amazon Linux AMI release 2014.09
+#    OpsWorks Instance: cumulus
+#    OpsWorks Instance ID: 5264f7bc-0c24-46b9-901b-6ce31c4f6723
+#    OpsWorks Layers: Python
+#    OpsWorks Stack: OpsTEST
+#    EC2 Region: ap-southeast-1
+#    EC2 Availability Zone: ap-southeast-1a
+#    EC2 Instance ID: i-c7be7c63
+#    Public IP: 54.255.233.6
+#    Private IP: 172.31.12.244
+#    VPC ID: vpc-8e42adeb
+#    Subnet ID: subnet-6dba4008
+
