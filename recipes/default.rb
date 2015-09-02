@@ -68,17 +68,17 @@ end
 # execute "load module and restart apache" do
 # end
 
-execute "wsgi.conf" do
-     command "echo 
-     'WSGIScriptAlias / /srv/www/current/ams/wsgi.py
-     WSGIPythonPath /srv/wwww/current
+# execute "wsgi.conf" do
+#      command "echo 
+#      'WSGIScriptAlias / /srv/www/current/ams/wsgi.py
+#      WSGIPythonPath /srv/wwww/current
 
-     <Directory /srv/www/current>
-     <Files wsgi.py>
-     Require all granted#
-      </Files>
-     </Directory>' > /etc/httpd/conf.d/wsgi.conf"
- end
+#      <Directory /srv/www/current>
+#      <Files wsgi.py>
+#      Require all granted#
+#       </Files>
+#      </Directory>' > /etc/httpd/conf.d/wsgi.conf"
+#  end
 
 
 
@@ -103,6 +103,7 @@ Chef::Log.info("****** --------------- Start of Deployment -----------------****
 Chef::Log.info("****** --------------- Pull From Repo -----------------******")
 # - Pull from repo
 # - Set symnlinks
+#git clone -b develop git@github.com:user/myproject.git
 
 
 execute "Install_VirtualEnv" do
