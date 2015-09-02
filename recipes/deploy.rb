@@ -1,41 +1,47 @@
-include_recipe 'deploy'
-
-node[:deploy].each do |application, deploy|
-  opsworks_deploy_dir do
-    user deploy[:user]
-    group deploy[:group]
-    path deploy[:deploy_to]
-  end
-
-  opsworks_deploy do
-    deploy_data deploy
-    app application
-  end
-
-  current_dir = ::File.join(deploy[:deploy_to], 'current')
-  webapp_dir = ::File.join(node['tomcat']['webapps_base_dir'], deploy[:document_root].blank? ? application : deploy[:document_root])
-
-  # opsworks_deploy creates some stub dirs, which are not needed for typical webapps
-  ruby_block "remove unnecessary directory entries in #{current_dir}" do
-    block do
-      node['tomcat']['webapps_dir_entries_to_delete'].each do |dir_entry|
-        ::FileUtils.rm_rf(::File.join(current_dir, dir_entry), :secure => true)
-      end
+deploy "#{node[:app][:dir]}" do
+    repo "#{node[:app][:repo]}"
+                revision "#{node[:app][:branch]}"
+    user "deploy"
+    #owner "deploy
+    purge_before_symlink %w{tmp log}
+    create_dirs_before_symlink ["tmp"]
+    symlink_before_migrate "system/database.js" => "config/database-sim.js"
+    symlinks "pids"=>"tmp/pids", "log"=>"log"
+  
+    before_restart do
+        current_release = release_path
+ 
+        bash "npminstall" do
+            user "deploy"
+            cwd "#{current_release}"
+            code <<-EOH
+            
+            cp -f #{node[:app][:dir]}/shared/system/database.yml #{current_release}/config/database.yml
+            cp -f #{node[:app][:dir]}/shared/system/server.yml #{current_release}/config/server.yml
+            cp -f #{node[:app][:dir]}/shared/system/permissions.yml #{current_release}/config/permissions.yml
+            cp -f #{node[:app][:dir]}/shared/system/s3config.yml #{current_release}/config/s3config.yml
+            cp -f #{node[:app][:dir]}/shared/system/node_modules.tgz #{current_release}/node_modules.tgz
+            # /home/deploy/nvm/v0.11.1/bin/npm install
+            tar -xzvf node_modules.tgz
+                                EOH
+            environment 'HOME' => "#{current_release}"
+        end
+       
+ 
+        bash "bundle" do
+            user "root"
+            cwd "#{current_release}"
+            code <<-EOH
+            
+            chown -R deploy:deploy #{node[:app][:dir]}
+            chown -R deploy:deploy /mnt/#{node[:app][:mynamespace]}-log
+            EOH
+        end
     end
-  end
-
-  link webapp_dir do
-    to current_dir
-    action :create
-  end
-
-  #include_recipe 'tomcat::service'
-
-  #execute 'trigger tomcat service restart' do
-  #  command '/bin/true'
-#     not_if { node['tomcat']['auto_deploy'].to_s == 'true' }
-#     notifies :restart, resources(:service => 'tomcat')
-#   end
-# end
-
-# include_recipe 'tomcat::context'
+ 
+        migrate false
+        action :deploy # or :rollback
+        #restart_command "touch tmp/restart.txt"
+        git_ssh_wrapper "/home/deploy/.ssh/wrap-ssh4git.sh"
+        #scm_provider Chef::Provider::Git # is the default, for svn: Chef::Provider::Subversion
+end
