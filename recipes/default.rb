@@ -46,8 +46,20 @@ execute "install_EPEL" do
     # command "yum -y install http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
 end
 
-execute "install_python-pip" do
-    command "yum -y install python-pip"
+# execute "install_python-pip" do
+#     command "yum -y install python-pip"
+# end
+
+# execute "install_upgrade-python-pip" do
+# end
+
+bash 'install_pip_then_upgrade' do
+  user "root"
+  cwd "/tmp" 
+  code <<-EOH
+    yum -y install python-pip
+    sudo pip-2.7 install --upgrade pip
+    EOH
 end
 
 execute "install_mod_wsgi" do
@@ -94,8 +106,8 @@ end
 # source venv/bin/activate
 #
 
-execute "install_package" do
-    command "sudo pip install virtualenv"
+execute "install_virtualenv" do
+    command "sudo pip-2.7 install virtualenv"
 end  
 
 #setup virtual environemnt (/srv/wwww/venv)
