@@ -117,7 +117,8 @@ bash 'activate_virtualenv' do
     cd /srv/www
     virtualenv venv
     source venv/bin/activate
-    #venv/bin/pip install -r current/requirements.txt
+    venv/bin/pip install --upgrade pip
+    venv/bin/pip install -r current/requirements.txt
   EOH
 end
 
