@@ -1,7 +1,7 @@
-Chef::Log.info("******Creating deploymeny directory.******")
+Chef::Log.info("****** Setup deployment directory ******")
 data_dir = value_for_platform(
-  "amazon" => { "default" => "/srv/www" },
-  "centos" => { "default" => "/srv/www" }
+  "amazon" => { "default" => "/srv/www/shared" },
+  "centos" => { "default" => "/srv/www/shared" }
 )
 
 directory data_dir do
@@ -13,7 +13,7 @@ directory data_dir do
 end
 
 
-Chef::Log.info("******Installing container application******")
+Chef::Log.info("****** Installing container applications ******")
 bash 'install' do
   user "root"
   cwd "/tmp" 
@@ -24,18 +24,18 @@ bash 'install' do
 end
 
 # Chef::Log.info("****** Python 2.7 from tarball ******")
-# bash 'install' do
-#   user "root"
-#   cwd "/tmp" 
-#   code <<-EOH   
-#     wget https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz
-#     tar xvfz Python-2.7.8.tgz
-#     cd Python-2.7.8
-#     ./configure --prefix=/usr/local
-#     make 
-#     make altinstall
-#     EOH
-# end
+bash 'install' do
+   user "root"
+   cwd "/tmp" 
+   code <<-EOH   
+     wget https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz
+     tar xvfz Python-2.7.8.tgz
+     cd Python-2.7.8
+     ./configure --prefix=/usr/local
+     make 
+     make altinstall
+     EOH
+end
 
 # execute "install EPEL" do
 #     command "rpm -i --force http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
@@ -58,15 +58,11 @@ execute "Load_mod_wsgi module" do
     command "echo 'LoadModule wsgi_module modules/mod_wsgi.so' > /etc/httpd/conf.d/wsgi.conf"
 end    
 
+#Use WSGI.conf.erb template
 template "/etc/httpd/conf.d/wsgi.conf" do
   source "wsgi.conf.erb"
 end
 
-# excute "setup httpd document root" do
-# end
-
-# execute "load module and restart apache" do
-# end
 
 # execute "wsgi.conf" do
 #      command "echo 
@@ -82,63 +78,99 @@ end
 
 
 
-Chef::Log.info("******Copying from index.html to replace standard http welcome pag.******")
-cookbook_file '/var/www/html/index.py' do
-   source 'index.py'
-   mode '0644'
-end
+# Chef::Log.info("******Copying from index.html to replace standard http welcome pag.******")
+# cookbook_file '/var/www/html/index.py' do
+#    source 'index.py'
+#    mode '0644'
+# end
 
-Chef::Log.info("******Enable and start httpd.******")
+Chef::Log.info("****** Start Httpd ******")
 service 'httpd' do
   action [ :enable, :start ]
 end
 
+# Install virtualenv via Pip
+# virtualenv venv
+# source venv/bin/activate
+#
 
-
-
-Chef::Log.info("****** --------------- Start of Deployment -----------------******")
-
-
-
-Chef::Log.info("****** --------------- Pull From Repo -----------------******")
-# - Pull from repo
-# - Set symnlinks
-#git clone -b develop git@github.com:user/myproject.git
-
-
-execute "Install_VirtualEnv" do
+execute "install_package" do
     command "sudo pip install virtualenv"
 end  
 
 #setup virtual environemnt (/srv/wwww/venv)
-bash 'install_Virtualenv' do
+bash 'activate_virtualenv' do
   user "root"
   cwd "/tmp" 
   code <<-EOH
     cd /srv/www
     virtualenv venv
     source venv/bin/activate
-    venv/bin/pip install -r current/requirements.txt
+    #venv/bin/pip install -r current/requirements.txt
   EOH
 end
 
-execute "Python2.7 install Python2.7" do
-    command "sudo /srv/www/venv/bin/easy_install install python2.7"
-end  
+# Install python2.7 via venv
+# bash 'install_python2.7' do
+#   user "root"
+#   cwd "/tmp"
+#   code <<-EOH
+#     /srv/www/venv/bin/easy_install install python2.7
+#   EOH
+# end 
+
+
+Chef::Log.info("****** --------------- Start of Deployment -----------------******")
+
+
+# Initial deploy
+# bash 'deploy' do
+#   user "root"
+#   cwd "/tmp"
+#   code <<-EOH
+#     /srv/www/venv/bin/easy_install install python2.7
+#   EOH
+# end 
+
+
+Chef::Log.info("****** --------------- Pull From Repo -----------------******")
+# - Pull from repo
+# - Set symnlinks
+#git clone -b develop git@github.com:user/myproject.git
+# http://www.rootdown.net/blog/2012/04/10/introducing-deploy-wrapper/
+# After pullout, go to virtualenv
+# Install requirements.txt
+# Restart httpd
+
+
+# execute "Python2.7 install Python2.7" do
+#     command "sudo /srv/www/venv/bin/easy_install install python2.7"
+# end  
 
 # Notes on installing python, it should be 2.7 to avoid compatibility inssues
 # http://tuxlabs.com/?p=194
+#
 
 
 
-
-Chef::Log.info("****** --------------- Run DBMigrat  -----------------******")
+Chef::Log.info("****** --------------- Run DBMigrate  -----------------******")
 # Run DB migration
 #1
 #2
 #3
 #4
 
+# deploy "#{node[:app][:dir]}" do
+#     repo "#{node[:app][:repo]}"
+#     revision "#{node[:app][:branch]}"
+#     user "deploy"
+#     #owner "deploy
+#     purge_before_symlink %w{tmp log}
+#     create_dirs_before_symlink ["tmp"]
+#     #symlink_before_migrate "system/database.js" => "config/database-sim.js"
+#     symlinks "pids"=>"tmp/pids", "log"=>"log"
+
+# end
 Chef::Log.info("****** --------------- Update Symlink -----------------******")
 
 
