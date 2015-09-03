@@ -12,6 +12,22 @@ directory data_dir do
   action :create
 end
 
+# re-create default python logs - later to modify 
+# touch /opt/python/log/mobilecrashlogs
+log_dir = "/opt/python/log"
+directory log_dir do
+  mode 0755
+  owner 'root'
+  group 'root'
+  recursive true
+  action :create
+end  
+
+#Creare mobilecrashlogs file
+execute "create_mobilecrashlogs" do
+    command "sudo touch /opt/python/log/mobilecrashlog"
+end  
+
 
 Chef::Log.info("****** Installing container applications ******")
 bash 'install' do
@@ -184,9 +200,5 @@ Chef::Log.info("****** --------------- Run DBMigrate  -----------------******")
 
 # end
 Chef::Log.info("****** --------------- Update Symlink -----------------******")
-
-
-
-
 
 
