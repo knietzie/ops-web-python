@@ -24,18 +24,18 @@ bash 'install' do
 end
 
 # Chef::Log.info("****** Python 2.7 from tarball ******")
-bash 'install' do
-   user "root"
-   cwd "/tmp" 
-   code <<-EOH   
-     wget https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz
-     tar xvfz Python-2.7.8.tgz
-     cd Python-2.7.8
-     ./configure --prefix=/usr/local
-     make 
-     make altinstall
-     EOH
-end
+# bash 'install' do
+#    user "root"
+#    cwd "/tmp" 
+#    code <<-EOH   
+#      wget https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz
+#      tar xvfz Python-2.7.8.tgz
+#      cd Python-2.7.8
+#      ./configure --prefix=/usr/local
+#      make 
+#      make altinstall
+#      EOH
+# end
 
 # execute "install EPEL" do
 #     command "rpm -i --force http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
