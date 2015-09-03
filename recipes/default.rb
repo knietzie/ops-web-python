@@ -53,14 +53,13 @@ end
 # execute "install_upgrade-python-pip" do
 # end
 
-bash 'install_pip_then_upgrade' do
-  user "root"
-  cwd "/tmp" 
-  code <<-EOH
-    yum -y install python-pip
-    sudo pip-2.7 install --upgrade pip
-    EOH
-end
+execute "install_pip" do
+    command "yum -y install python-pip"
+end  
+
+execute "update_pip" do
+    command "sudo pip-2.7 install --upgrade pip"
+end  
 
 execute "install_mod_wsgi" do
     command "yum -y install mod_wsgi"
