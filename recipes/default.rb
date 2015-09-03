@@ -58,7 +58,7 @@ execute "install_pip" do
 end  
 
 execute "update_pip" do
-    command "sudo pip-2.7 install --upgrade pip"
+    command "sudo pip install --upgrade pip"
 end  
 
 execute "install_mod_wsgi" do
@@ -106,7 +106,7 @@ end
 #
 
 execute "install_virtualenv" do
-    command "sudo pip-2.7 install virtualenv"
+    command "sudo pip install virtualenv"
 end  
 
 #setup virtual environemnt (/srv/wwww/venv)
