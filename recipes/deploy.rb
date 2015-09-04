@@ -12,31 +12,70 @@
 #   #ssh_wrapper "/tmp/private_code/wrap-ssh4git.sh"
 #   # deploy wrapper http://stackoverflow.com/questions/18388722/chef-deploy-resource-private-repo-ssh-deploy-keys-and-ssh-wrapper
 #   #http://www.jasongrimes.org/2012/06/deploying-a-lamp-application-with-chef-vagrant-and-ec2-3-of-3/#private-repo
-
+#    still on data bag http://engineering.ooyala.com/blog/keeping-secrets-chef
+# http://atomic-penguin.github.io/blog/2013/06/07/HOWTO-test-kitchen-and-encrypted-data-bags/
 
 # end
 ###-------------------###
 
 #include_recipe "hello_app::webserver" 
-
-deploy_revision node['ams']['deploy_dir'] do
-  scm_provider Chef::Provider::Git 
-  repo node['ams']['deploy_repo']
-  revision node['ams']['deploy_branch']
-  enable_submodules true
-  shallow_clone false
-  symlink_before_migrate({}) # Symlinks to add before running db migrations
-  purge_before_symlink [] # Directories to delete before adding symlinks
-  create_dirs_before_symlink ["config"] # Directories to create before adding symlinks
-  ###symlinks({"config/local.config.php" => "config/local.config.php"})
-  # migrate true
-  # migration_command "php app/console doctrine:migrations:migrate" 
+Chef::Log.info("****** Deploying AMS to /srv/www ******") 
+deploy 'ams' do
+  repo 'git@bitbucket.org:imfree/ams.git'
+  revision 'testing'
+  user 'root'
+  deploy_to '/srv/www'
+  symlink_before_migrate({})
+  purge_before_symlink []
+  ssh_wrapper '/root/.ssh/wrap-ssh4git.sh'
   action :deploy
-  
-  restart_command do
-    service "httpd" do action :restart; end
-  end
 end
+
+Chef::Log.info("****** Run requirements.txt to ******") 
+#setup virtual environemnt (/srv/wwww/venv)
+bash 'activate_virtualenv' do
+  user "root"
+  cwd "/tmp" 
+  code <<-EOH
+    cd /srv/www
+    virtualenv venv
+    source venv/bin/activate
+    venv/bin/pip install --upgrade pip
+    venv/bin/pip install -r current/requirements.txt
+  EOH
+end
+
+Chef::Log.info("****** Runserver (python) ******") 
+bash 'activate_virtualenv' do
+  user "root"
+  cwd "/tmp" 
+  code <<-EOH
+    cd /srv/www
+    virtualenv venv
+    source venv/bin/activate
+    venv/bin/python current/manage.py runnserver 0.0.0.0:80
+  EOH
+end
+
+# deploy_revision node['ams']['deploy_dir'] do
+#   scm_provider Chef::Provider::Git 
+#   repo node['ams']['deploy_repo']
+#   revision node['ams']['deploy_branch']
+#   key_pair node['ams']['keypair']
+#   enable_submodules true
+#   shallow_clone false
+#   symlink_before_migrate({}) # Symlinks to add before running db migrations
+#   purge_before_symlink [] # Directories to delete before adding symlinks
+#   create_dirs_before_symlink ["config"] # Directories to create before adding symlinks
+#   ###symlinks({"config/local.config.php" => "config/local.config.php"})
+#   # migrate true
+#   # migration_command "php app/console doctrine:migrations:migrate" 
+#   action :deploy
+
+#   restart_command do
+#     service "httpd" do action :restart; end
+#   end
+# end
 
 
 # deploy "#{node[:app][:dir]}" do 

@@ -12,5 +12,5 @@ platforms:
 suites:
   - name: default
     run_list:
-      - recipe[ops-web-python::default]
+      - recipe[ops-web-python::deploy]
     attributes:
