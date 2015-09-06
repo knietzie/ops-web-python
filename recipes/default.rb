@@ -61,17 +61,16 @@ end
 execute "start_nginx" do
   command "sudo service nginx start"
 end
-
-
 ####### Using NGINX Install nginx ------
 
-execute "install_pip" do
-    command "yum -y install python-pip"
-end  
 
-execute "update_pip" do
-    command "sudo pip install --upgrade pip"
-end  
+# execute "install_pip" do
+#     command "yum -y install python-pip"
+# end  
+
+# execute "update_pip" do
+#     command "sudo pip install --upgrade pip"
+# end  
 
 # execute "install_mod_wsgi" do
 #     command "yum -y install mod_wsgi"
