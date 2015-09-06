@@ -25,7 +25,7 @@ file "/root/.ssh/id_rsa" do
   owner "root"
   group "root"
   mode 00600
-  action : create
+  action :create
 end
 
 Chef::Log.info("****** Deploying AMS to /srv/www ******") 
