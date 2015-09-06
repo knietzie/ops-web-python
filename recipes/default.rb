@@ -111,7 +111,7 @@ end
 
 # execute "install_virtualenv" do
 #   command "sudo pip install virtualenv"
-end  
+# end  
 
 #setup virtual environemnt (/srv/wwww/venv)
 bash 'activate_virtualenv' do
