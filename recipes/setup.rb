@@ -70,6 +70,9 @@ end
 #     command "yum -y install python-pip"
 # end  
 
+execute "update pip"
+execute "sudo pip install --upgrade pip" do
+end
 
 execute "install_virtualenv" do
     command "sudo pip install virtualenv"
@@ -87,6 +90,7 @@ bash 'activate_virtualenv' do
     venv/bin/pip install gunicorn
   EOH
 end
+
 
 # Install python2.7 via venv
 # bash 'install_python2.7' do
