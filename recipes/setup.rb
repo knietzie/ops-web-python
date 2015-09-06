@@ -49,6 +49,7 @@ end
 #******* Enable this in AWS Production **********
 
 ####### Using NGINX Install nginx ------
+##
 # Install nginx
 execute "Install_nginx" do
   command "yum -y install nginx"
@@ -58,6 +59,7 @@ end
 execute "start_nginx" do
   command "sudo service nginx start"
 end
+##
 ####### Using NGINX Install nginx ------
 
 
@@ -66,7 +68,7 @@ execute "install_pip" do
 end  
 
 execute "update pip" do
-  command "sudo pip install --upgrade pip" 
+  command "sudo pip-2.7 install --upgrade pip" 
 end
 
 execute "install_virtualenv" do
