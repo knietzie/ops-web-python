@@ -117,7 +117,7 @@ bash 'Run restart gunicorn' do
     source venv/bin/activate
     killall gunicorn
     cd /srv/www/current
-    gunicorn -w3 ams.wsgi:application 
+    gunicorn -w3 ams.wsgi:application -D 
   EOH
 end
 
