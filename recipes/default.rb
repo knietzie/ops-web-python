@@ -4,6 +4,7 @@ data_dir = value_for_platform(
   "centos" => { "default" => "/srv/www/shared" }
 )
 
+# Create deployment directory
 directory data_dir do
   mode 0755
   owner 'root'
@@ -12,7 +13,7 @@ directory data_dir do
   action :create
 end
 
-# re-create default python logs - later to modify 
+# Create default python logs - later to modify 
 # touch /opt/python/log/mobilecrashlogs
 log_dir = "/opt/python/log"
 directory log_dir do
@@ -39,35 +40,30 @@ bash 'install' do
     EOH
 end
 
-# Chef::Log.info("****** Python 2.7 from tarball ******")
-# bash 'install' do
-#    user "root"
-#    cwd "/tmp" 
-#    code <<-EOH   
-#      wget https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz
-#      tar xvfz Python-2.7.8.tgz
-#      cd Python-2.7.8
-#      ./configure --prefix=/usr/local
-#      make 
-#      make altinstall
-#      EOH
-# end
+#******* Enable this in AWS Production **********
+#execute "install_EPEL" do
+#  command "rpm -qa | grep -qw  epel-release-6-8.noarch | rpm -i --force http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
+#     # command "yum -y install http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
+#end
+#******* Enable this in AWS Production **********
 
-# execute "install EPEL" do
-#     command "rpm -i --force http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
-# end
 
-execute "install_EPEL" do
-    command "rpm -qa | grep -qw  epel-release-6-8.noarch | rpm -i --force http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
-    # command "yum -y install http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
+####### Using NGINX Install nginx ------
+# sudo yum install epel-release
+# https://www.digitalocean.com/community/tutorials/how-to-deploy-python-wsgi-apps-using-gunicorn-http-server-behind-nginx
+
+
+execute "install webserver" do
+  command "yum -y install nginx"
 end
 
-# execute "install_python-pip" do
-#     command "yum -y install python-pip"
-# end
+# start nginx
+execute "start_nginx" do
+  command "sudo service nginx start"
+end
 
-# execute "install_upgrade-python-pip" do
-# end
+
+####### Using NGINX Install nginx ------
 
 execute "install_pip" do
     command "yum -y install python-pip"
@@ -90,6 +86,8 @@ template "/etc/httpd/conf.d/wsgi.conf" do
   source "wsgi.conf.erb"
 end
 
+###  ---------- WSGI SETTINHGS  ##############
+####  https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/modwsgi/
 
 # execute "wsgi.conf" do
 #      command "echo 
@@ -113,7 +111,7 @@ end
 
 Chef::Log.info("****** Start Httpd ******")
 service 'httpd' do
-  action [ :enable, :start ]
+  action [ :disable, :stop ]
 end
 
 # Install virtualenv via Pip
@@ -131,10 +129,10 @@ bash 'activate_virtualenv' do
   cwd "/tmp" 
   code <<-EOH
     cd /srv/www
-    virtualenv venv
+    virtualenv venv --python=/usr/local/bin/python
     source venv/bin/activate
     venv/bin/pip install --upgrade pip
-    venv/bin/pip install -r current/requirements.txt
+    venv/bin/pip install gunicorn
   EOH
 end
 

@@ -31,31 +31,90 @@ deploy 'ams' do
   action :deploy
 end
 
+## ----- ams deloy attributes
+           # deploy("ams") do
+           #   action [:deploy]
+           #   retries 0
+           #   retry_delay 2
+           #   default_guard_interpreter :default
+           #   deploy_to "/srv/www"
+           #   repository_cache "cached-copy"
+           #   create_dirs_before_symlink ["tmp", "public", "config"]
+           #   symlinks {"system"=>"public/system", "pids"=>"tmp/pids", "log"=>"log"}
+           #   revision "testing"
+           #   remote "origin"
+           #   scm_provider Chef::Provider::Git
+           #   keep_releases 5
+           #   enable_checkout true
+           #   checkout_branch "deploy"
+           #   declared_type :deploy
+           #   cookbook_name :"ops-web-python"
+           #   recipe_name "deploy"
+           #   repo "git@bitbucket.org:imfree/ams.git"
+           #   user "root"
+           #   git_ssh_wrapper "/root/.ssh/wrap-ssh4git.sh"
+           #   shared_path "/srv/www/shared"
+           #   destination "/srv/www/shared/cached-copy"
+           #   current_path "/srv/www/current"
+           # end
+##
+
 Chef::Log.info("****** Run requirements.txt to ******") 
 #setup virtual environemnt (/srv/wwww/venv)
-bash 'activate_virtualenv' do
+# [2015-09-05 17:32:52 +0000] [5166] [INFO] Shutting down: Master
+# (venv)[root@default-centos-65 current]# pwd
+# /srv/www/current
+# (venv)[root@default-centos-65 current]# gunicorn ams.wsgi:application
+
+# (venv)[root@default-centos-65 www]# cd current/
+# (venv)[root@default-centos-65 current]# gunicorn -w3 ams.wsgi:application
+
+# [vagrant@default-centos-65 ~]$ ps -ef  |grep gunicorn
+# root      1579  1500  0 01:45 pts/0    00:00:00 /srv/www/venv/bin/python /srv/www/venv/bin/gunicorn ams.wsgi:application
+# root      1584  1579  0 01:45 pts/0    00:00:00 /srv/www/venv/bin/python /srv/www/venv/bin/gunicorn ams.wsgi:application
+# vagrant   1623  1603  0 01:46 pts/2    00:00:00 grep gunicorn
+
+bash 'Update requirements and runserver' do
   user "root"
   cwd "/tmp" 
   code <<-EOH
     cd /srv/www
-    virtualenv venv
+    #virtualenv venv
     source venv/bin/activate
     venv/bin/pip install --upgrade pip
     venv/bin/pip install -r current/requirements.txt
+    mkdir /srv/www/current/static
+    cd /srv/www/current/static
+    ../manage.py collectstatic -v0 --noinput
   EOH
 end
 
-Chef::Log.info("****** Runserver (python) ******") 
-bash 'activate_virtualenv' do
-  user "root"
-  cwd "/tmp" 
-  code <<-EOH
-    cd /srv/www
-    virtualenv venv
-    source venv/bin/activate
-    venv/bin/python current/manage.py runnserver 0.0.0.0:80
-  EOH
-end
+# #runs staticcollecy
+#https://docs.djangoproject.com/en/dev/howto/static-files/deployment/
+# ./manage.py collectstatic -v0 --noinput'
+
+
+
+
+# Chef::Log.info(" ****** Re-start Httpd ****** ")
+# service 'httpd' do
+#   action [ :enable, :restop ]
+# end
+
+#Deployment - http://bicofino.io/blog/2014/01/16/installing-python-2-dot-7-6-on-centos-6-dot-5/
+# Deployment - http://www.slideshare.net/jweiss/chefconf-2014-aws-opsworks-under-the-hood
+
+# Chef::Log.info("****** Runserver (python) ******") 
+# bash 'activate_virtualenv' do
+#   user "root"
+#   cwd "/tmp" 
+#   code <<-EOH
+#     cd /srv/www
+#     virtualenv venv
+#     source venv/bin/activate
+#     venv/bin/python current/manage.py runnserver 0.0.0.0:80
+#   EOH
+# end
 
 # deploy_revision node['ams']['deploy_dir'] do
 #   scm_provider Chef::Provider::Git 

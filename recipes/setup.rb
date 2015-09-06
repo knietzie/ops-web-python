@@ -142,8 +142,9 @@ end
 Chef::Log.info("****** --------------- Pull From Repo -----------------******")
 # - Pull from repo
 # - Set symnlinks
-#git clone -b develop git@github.com:user/myproject.git
+#   git clone -b develop git@github.com:user/myproject.git
 
+#
 # After pullout, go to virtualenv
 # Install requirements.txt
 # Restart httpd
