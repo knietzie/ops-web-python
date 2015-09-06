@@ -99,13 +99,13 @@ bash 'install python 2.7' do
     yum -y install python27-devel
     rm /usr/bin/python
     ln -s /usr/bin/python2.7 /usr/bin/python 
+  EOH
+end
 
     # # yum still needs 2.6, so write it in and backup script 
     # cp /usr/bin/yum /usr/bin/_yum_before_27 
     # sed -i s/python/python2.6/g /usr/bin/yum 
     # sed -i s/python2.6/python2.6/g /usr/bin/yum 
-  EOH
-end
 
 bash 'install pip for python 2.7' do
   user "root"
