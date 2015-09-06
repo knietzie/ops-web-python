@@ -20,13 +20,13 @@
 
 
 ##  Recipe to save ssh_key to /root/.ssh/id_rsa 
-file "/root/.ssh/id_rsa" do
-  content node['ams']['ssh_key']
-  owner "root"
-  group "root"
-  mode 0600
-  action :create
-end
+# file "/root/.ssh/id_rsa" do
+#   content node['ams']['ssh_key']
+#   owner "root"
+#   group "root"
+#   mode 0600
+#   action :create
+# end
 
 Chef::Log.info("****** Deploying AMS to /srv/www ******") 
 deploy 'ams' do
