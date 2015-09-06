@@ -90,41 +90,23 @@ end
 
 
 Chef::Log.info("****** Run Migrations ******") 
-bash 'Run migrations' do
-  user "root"
-  cwd "/tmp" 
-  code <<-EOH
-    cd /srv/www
-    source venv/bin/activate
-    cd /srv/www/current
-    ## 01_syncdb:
-    ./manage.py syncdb --noinput
-    ## 03_collectstatic:
-    ## 04_wsgipass:
-    ## 05_migrations:
-    ./manage.py migrate --noinput 
-    ## 06_data:
-    ./manage.py loaddata city_data.json barangay_data.json language_data.json error_message_data.json error_translation_data.json
-  EOH
-end
-
-# container_commands:
-#   #00_migrations:
-#   #  command: "python manage.py migrate --noinput --fake"
-#   01_syncdb:
-#     command: "python manage.py syncdb --noinput"
-#     leader_only: true
-#   #02_createadmin:
-#   #  command: "./scripts/createadmin.py"
-#   #  leader_only: true
-#   03_collectstatic:
-#     command: "django-admin.py collectstatic --noinput"
-#   04_wsgipass:
-#     command: 'echo "WSGIPassAuthorization On" >> ../wsgi.conf'
-#   05_migrations:
-#     command: "python manage.py migrate --noinput"
-#   06_data:
-#     command: "python manage.py loaddata city_data.json barangay_data.json language_data.json error_message_data.json error_translation_data.json"
+# bash 'Run migrations' do
+#   user "root"
+#   cwd "/tmp" 
+#   code <<-EOH
+#     cd /srv/www
+#     source venv/bin/activate
+#     cd /srv/www/current
+#     ## 01_syncdb:
+#     ./manage.py syncdb --noinput
+#     ## 03_collectstatic:
+#     ## 04_wsgipass:
+#     ## 05_migrations:
+#     ./manage.py migrate --noinput 
+#     ## 06_data:
+#     ./manage.py loaddata city_data.json barangay_data.json language_data.json error_message_data.json error_translation_data.json
+#   EOH
+# end
 
 
 Chef::Log.info("****** Restart Gunicorn ******") 
@@ -140,27 +122,6 @@ bash 'Run restart gunicorn' do
   EOH
 end
 
-
-
-# Chef::Log.info(" ****** Re-start Httpd ****** ")
-# service 'httpd' do
-#   action [ :enable, :restop ]
-# end
-
-#Deployment - http://bicofino.io/blog/2014/01/16/installing-python-2-dot-7-6-on-centos-6-dot-5/
-# Deployment - http://www.slideshare.net/jweiss/chefconf-2014-aws-opsworks-under-the-hood
-
-# Chef::Log.info("****** Runserver (python) ******") 
-# bash 'activate_virtualenv' do
-#   user "root"
-#   cwd "/tmp" 
-#   code <<-EOH
-#     cd /srv/www
-#     virtualenv venv
-#     source venv/bin/activate
-#     venv/bin/python current/manage.py runnserver 0.0.0.0:80
-#   EOH
-# end
 
 # deploy_revision node['ams']['deploy_dir'] do
 #   scm_provider Chef::Provider::Git 
@@ -187,8 +148,6 @@ end
 #     repo "#{node[:app][:repo]}"
 #     revision "#{node[:app][:branch]}"
 #     user "opsdeploy"
-
-
 # end    
 #     #owner "deploy
 
@@ -225,21 +184,3 @@ end
 # #             environment 'HOME' => "#{current_release}"
 # #         end
        
- 
-#         bash "bundle" do
-#             user "root"
-#             cwd "#{current_release}"
-#             code <<-EOH
-            
-#             chown -R deploy:deploy #{node[:app][:dir]}
-#             chown -R deploy:deploy /mnt/#{node[:app][:mynamespace]}-log
-#             EOH
-#         end
-#     end
- 
-#         migrate false
-#         action :deploy # or :rollback
-#         #restart_command "touch tmp/restart.txt"
-#         git_ssh_wrapper "/home/deploy/.ssh/wrap-ssh4git.sh"
-#                 #scm_provider Chef::Provider::Git # is the default, for svn: Chef::Provider::Subversion
-# end
