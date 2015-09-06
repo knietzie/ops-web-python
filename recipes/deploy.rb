@@ -74,7 +74,7 @@ Chef::Log.info("****** Run requirements.txt to ******")
 # root      1584  1579  0 01:45 pts/0    00:00:00 /srv/www/venv/bin/python /srv/www/venv/bin/gunicorn ams.wsgi:application
 # vagrant   1623  1603  0 01:46 pts/2    00:00:00 grep gunicorn
 
-bash 'Update requirements and runserver' do
+bash 'Update requirements and deploy collect static' do
   user "root"
   cwd "/tmp" 
   code <<-EOH

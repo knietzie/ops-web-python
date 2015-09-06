@@ -1,7 +1,7 @@
 Chef::Log.info("****** Setup deployment directory ******")
 data_dir = value_for_platform(
-  "amazon" => { "default" => "/srv/www/shared" },
-  "centos" => { "default" => "/srv/www/shared" }
+  "amazon" => { "default" => "/srv/www" },
+  "centos" => { "default" => "/srv/www" }
 )
 
 # Create deployment directory
@@ -41,10 +41,10 @@ bash 'install' do
 end
 
 #******* Enable this in AWS Production **********
-#execute "install_EPEL" do
-#  command "rpm -qa | grep -qw  epel-release-6-8.noarch | rpm -i --force http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
+execute "install_EPEL" do
+  command "rpm -qa | grep -qw  epel-release-6-8.noarch | rpm -i --force http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
 #     # command "yum -y install http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
-#end
+end
 #******* Enable this in AWS Production **********
 
 
@@ -53,7 +53,7 @@ end
 # https://www.digitalocean.com/community/tutorials/how-to-deploy-python-wsgi-apps-using-gunicorn-http-server-behind-nginx
 
 
-execute "install webserver" do
+execute "install Nginx webserver" do
   command "yum -y install nginx"
 end
 
@@ -73,18 +73,18 @@ execute "update_pip" do
     command "sudo pip install --upgrade pip"
 end  
 
-execute "install_mod_wsgi" do
-    command "yum -y install mod_wsgi"
-end  
+# execute "install_mod_wsgi" do
+#     command "yum -y install mod_wsgi"
+# end  
 
-execute "Load_mod_wsgi module" do
-    command "echo 'LoadModule wsgi_module modules/mod_wsgi.so' > /etc/httpd/conf.d/wsgi.conf"
-end    
+# execute "Load_mod_wsgi module" do
+#     command "echo 'LoadModule wsgi_module modules/mod_wsgi.so' > /etc/httpd/conf.d/wsgi.conf"
+# end    
 
 #Use WSGI.conf.erb template
-template "/etc/httpd/conf.d/wsgi.conf" do
-  source "wsgi.conf.erb"
-end
+# template "/etc/httpd/conf.d/wsgi.conf" do
+#   source "wsgi.conf.erb"
+# end
 
 ###  ---------- WSGI SETTINHGS  ##############
 ####  https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/modwsgi/
@@ -109,10 +109,10 @@ end
 #    mode '0644'
 # end
 
-Chef::Log.info("****** Start Httpd ******")
-service 'httpd' do
-  action [ :disable, :stop ]
-end
+# Chef::Log.info("****** Start Httpd ******")
+# service 'httpd' do
+#   action [ :disable, :stop ]
+# end
 
 # Install virtualenv via Pip
 # virtualenv venv
