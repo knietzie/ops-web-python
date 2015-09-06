@@ -32,7 +32,7 @@ end
 
 
 Chef::Log.info("****** Installing container applications ******")
-bash 'install' do
+bash 'install essentials' do
   user "root"
   cwd "/tmp" 
   code <<-EOH
@@ -48,12 +48,7 @@ execute "install_EPEL" do
 end
 #******* Enable this in AWS Production **********
 
-
 ####### Using NGINX Install nginx ------
-# sudo yum install epel-release
-# https://www.digitalocean.com/community/tutorials/how-to-deploy-python-wsgi-apps-using-gunicorn-http-server-behind-nginx
-
-
 # Install nginx
 execute "Install_nginx" do
   command "yum -y install nginx"
@@ -66,16 +61,16 @@ end
 ####### Using NGINX Install nginx ------
 
 
-# execute "install_pip" do
-#     command "yum -y install python-pip"
-# end  
+execute "install_pip" do
+  command "yum -y install python-pip"
+end  
 
-execute "update pip"
-execute "sudo pip install --upgrade pip" do
+execute "update pip" do
+  command "sudo pip install --upgrade pip" 
 end
 
 execute "install_virtualenv" do
-    command "sudo pip install virtualenv"
+  command "sudo pip install virtualenv"
 end  
 
 #setup virtual environemnt (/srv/wwww/venv)

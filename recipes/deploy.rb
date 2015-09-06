@@ -18,7 +18,9 @@
 # end
 ###-------------------###
 
-#include_recipe "hello_app::webserver" 
+
+#Recipe to get id_ss
+
 Chef::Log.info("****** Deploying AMS to /srv/www ******") 
 deploy 'ams' do
   repo 'git@bitbucket.org:imfree/ams.git'
@@ -27,7 +29,8 @@ deploy 'ams' do
   deploy_to '/srv/www'
   symlink_before_migrate({})
   purge_before_symlink []
-  ssh_wrapper '/root/.ssh/wrap-ssh4git.sh'
+  #ssh_keypair node['ams']['keypair']
+  ssh_wrapper '/root/.ssh/wrap-ssh4git.sh' 
   action :deploy
 end
 
