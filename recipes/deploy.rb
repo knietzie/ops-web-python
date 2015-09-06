@@ -21,7 +21,7 @@
 
 ##  Recipe to save ssh_key to /root/.ssh/id_rsa 
 file "/root/.ssh/id_rsa" do
-  content ssh_key
+  content "ssh_key"
   owner "root"
   group "root"
   mode 00600
