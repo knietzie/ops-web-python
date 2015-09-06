@@ -31,6 +31,9 @@ deploy 'ams' do
   action :deploy
 end
 
+# Master Branch:
+# RDS: aaidybs26rgr4c.cjkpdonajlva.ap-southeast-1.rds.amazonaws.com 
+
 ## ----- ams deloy attributes
            # deploy("ams") do
            #   action [:deploy]
@@ -58,6 +61,9 @@ end
            #   current_path "/srv/www/current"
            # end
 ##
+
+
+
 
 Chef::Log.info("****** Run requirements.txt to ******") 
 #setup virtual environemnt (/srv/wwww/venv)
