@@ -38,8 +38,7 @@ bash 'install essentials' do
   code <<-EOH
     yum update 
     yum -y install make automake git-core gcc gcc-c++ kernel-devel uuid libuuid-devel mysql-devel postgresql93 postgresql93-devel postgresql-devel
-    #yum -y install make automake gcc gcc-c++ kernel-devel git-core  
-    EOH
+  EOH
 end
 
 
@@ -55,6 +54,28 @@ end
 # Install nginx
 execute "Install_nginx" do
   command "yum -y install nginx"
+end
+
+# Add gunicorn.conf
+template "gunicorn.conf" do
+  path "/etc/nginx/conf.d/gunicorn.conf"
+  source "gunicorn.conf.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+end
+
+# Replace default nginx.com file
+execute "replace nginx.conf" do
+  command "sudo rm /etc/nginx/nginx.conf"
+end
+
+template "nginx.conf" do
+  path "/etc/nginx/nginx.conf"
+  source "nginx.conf.erb"
+  owner "root"
+  group "root"
+  mode "0644"
 end
 
 # start nginx
@@ -79,10 +100,10 @@ bash 'install python 2.7' do
     rm /usr/bin/python
     ln -s /usr/bin/python2.7 /usr/bin/python 
 
-    # yum still needs 2.6, so write it in and backup script 
-    cp /usr/bin/yum /usr/bin/_yum_before_27 
-    sed -i s/python/python2.6/g /usr/bin/yum 
-    sed -i s/python2.6/python2.6/g /usr/bin/yum 
+    # # yum still needs 2.6, so write it in and backup script 
+    # cp /usr/bin/yum /usr/bin/_yum_before_27 
+    # sed -i s/python/python2.6/g /usr/bin/yum 
+    # sed -i s/python2.6/python2.6/g /usr/bin/yum 
   EOH
 end
 
