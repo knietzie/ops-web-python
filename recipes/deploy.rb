@@ -21,10 +21,10 @@
 
 ##  Recipe to save ssh_key to /root/.ssh/id_rsa 
 file "/root/.ssh/id_rsa" do
-  content "ssh_key"
+  content node['ams']['ssh_key']
   owner "root"
   group "root"
-  mode 00600
+  mode 0600
   action :create
 end
 
