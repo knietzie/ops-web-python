@@ -85,6 +85,14 @@ end
 ##
 ####### Using NGINX Install nginx ------
 
+template "wrap-ssh4git.sh" do
+  path "/root/.ssh/wrap-ssh4git.sh"
+  source "wrap-ssh4git.sh.erb"
+  owner "root"
+  group "root"
+  mode "0755"
+end
+
 
 ########################################
 # install build tools 
