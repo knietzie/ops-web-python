@@ -119,7 +119,7 @@ bash 'activate_virtualenv' do
   cwd "/tmp" 
   code <<-EOH
     cd /srv/www
-    virtualenv venv --python=/usr/local/bin/python
+    virtualenv venv
     source venv/bin/activate
     venv/bin/pip install --upgrade pip
     venv/bin/pip install gunicorn
