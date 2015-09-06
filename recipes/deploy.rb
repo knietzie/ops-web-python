@@ -27,6 +27,7 @@
 #   mode 0600
 #   action :create
 # end
+Chef::Log.info("****** --------------- Start of Deployment -----------------******")
 
 Chef::Log.info("****** Deploying AMS to /srv/www ******") 
 deploy 'ams' do
@@ -78,7 +79,6 @@ bash 'Update requirements and deploy collect static' do
   cwd "/tmp" 
   code <<-EOH
     cd /srv/www
-    #virtualenv venv
     source venv/bin/activate
     venv/bin/pip install --upgrade pip
     venv/bin/pip install -r current/requirements.txt
@@ -89,26 +89,45 @@ bash 'Update requirements and deploy collect static' do
 end
 
 
-Chef::Log.info("****** Run gunicorn ******") 
-# #runs staticcollecy
-#https://docs.djangoproject.com/en/dev/howto/static-files/deployment/
-# ./manage.py collectstatic -v0 --noinput'
+Chef::Log.info("****** Run Migrations ******") 
+bash 'Run migrations' do
+  user "root"
+  cwd "/tmp" 
+  code <<-EOH
+    cd /srv/www
+    source venv/bin/activate
+    cd /srv/www/current
+    ## 01_syncdb:
+    ./manage.py syncdb --noinput
+    ## 03_collectstatic:
+    ## 04_wsgipass:
+    ## 05_migrations:
+    ./manage.py migrate --noinput 
+    ## 06_data:
+    ./manage.py loaddata city_data.json barangay_data.json language_data.json error_message_data.json error_translation_data.json
+  EOH
+end
+
+# container_commands:
+#   #00_migrations:
+#   #  command: "python manage.py migrate --noinput --fake"
+#   01_syncdb:
+#     command: "python manage.py syncdb --noinput"
+#     leader_only: true
+#   #02_createadmin:
+#   #  command: "./scripts/createadmin.py"
+#   #  leader_only: true
+#   03_collectstatic:
+#     command: "django-admin.py collectstatic --noinput"
+#   04_wsgipass:
+#     command: 'echo "WSGIPassAuthorization On" >> ../wsgi.conf'
+#   05_migrations:
+#     command: "python manage.py migrate --noinput"
+#   06_data:
+#     command: "python manage.py loaddata city_data.json barangay_data.json language_data.json error_message_data.json error_translation_data.json"
 
 
-#setup virtual environemnt (/srv/wwww/venv)
-# [2015-09-05 17:32:52 +0000] [5166] [INFO] Shutting down: Master
-# (venv)[root@default-centos-65 current]# pwd
-# /srv/www/current
-# (venv)[root@default-centos-65 current]# gunicorn ams.wsgi:application
-
-# (venv)[root@default-centos-65 www]# cd current/
-# (venv)[root@default-centos-65 current]# gunicorn -w3 ams.wsgi:application
-
-# [vagrant@default-centos-65 ~]$ ps -ef  |grep gunicorn
-# root      1579  1500  0 01:45 pts/0    00:00:00 /srv/www/venv/bin/python /srv/www/venv/bin/gunicorn ams.wsgi:application
-# root      1584  1579  0 01:45 pts/0    00:00:00 /srv/www/venv/bin/python /srv/www/venv/bin/gunicorn ams.wsgi:application
-# vagrant   1623  1603  0 01:46 pts/2    00:00:00 grep gunicorn
-
+Chef::Log.info("****** Restart Gunicorn ******") 
 bash 'Run restart gunicorn' do
   user "root"
   cwd "/tmp" 
