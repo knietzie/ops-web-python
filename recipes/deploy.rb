@@ -24,7 +24,7 @@
 Chef::Log.info("****** Deploying AMS to /srv/www ******") 
 deploy 'ams' do
   repo 'git@bitbucket.org:imfree/ams.git'
-  revision 'testing'
+  revision 'master'
   user 'root'
   deploy_to '/srv/www'
   symlink_before_migrate({})
@@ -63,26 +63,9 @@ end
            #   destination "/srv/www/shared/cached-copy"
            #   current_path "/srv/www/current"
            # end
-##
-
-
-
+#
 
 Chef::Log.info("****** Run requirements.txt to ******") 
-#setup virtual environemnt (/srv/wwww/venv)
-# [2015-09-05 17:32:52 +0000] [5166] [INFO] Shutting down: Master
-# (venv)[root@default-centos-65 current]# pwd
-# /srv/www/current
-# (venv)[root@default-centos-65 current]# gunicorn ams.wsgi:application
-
-# (venv)[root@default-centos-65 www]# cd current/
-# (venv)[root@default-centos-65 current]# gunicorn -w3 ams.wsgi:application
-
-# [vagrant@default-centos-65 ~]$ ps -ef  |grep gunicorn
-# root      1579  1500  0 01:45 pts/0    00:00:00 /srv/www/venv/bin/python /srv/www/venv/bin/gunicorn ams.wsgi:application
-# root      1584  1579  0 01:45 pts/0    00:00:00 /srv/www/venv/bin/python /srv/www/venv/bin/gunicorn ams.wsgi:application
-# vagrant   1623  1603  0 01:46 pts/2    00:00:00 grep gunicorn
-
 bash 'Update requirements and deploy collect static' do
   user "root"
   cwd "/tmp" 
@@ -98,10 +81,37 @@ bash 'Update requirements and deploy collect static' do
   EOH
 end
 
+
+Chef::Log.info("****** Run gunicorn ******") 
 # #runs staticcollecy
 #https://docs.djangoproject.com/en/dev/howto/static-files/deployment/
 # ./manage.py collectstatic -v0 --noinput'
 
+
+#setup virtual environemnt (/srv/wwww/venv)
+# [2015-09-05 17:32:52 +0000] [5166] [INFO] Shutting down: Master
+# (venv)[root@default-centos-65 current]# pwd
+# /srv/www/current
+# (venv)[root@default-centos-65 current]# gunicorn ams.wsgi:application
+
+# (venv)[root@default-centos-65 www]# cd current/
+# (venv)[root@default-centos-65 current]# gunicorn -w3 ams.wsgi:application
+
+# [vagrant@default-centos-65 ~]$ ps -ef  |grep gunicorn
+# root      1579  1500  0 01:45 pts/0    00:00:00 /srv/www/venv/bin/python /srv/www/venv/bin/gunicorn ams.wsgi:application
+# root      1584  1579  0 01:45 pts/0    00:00:00 /srv/www/venv/bin/python /srv/www/venv/bin/gunicorn ams.wsgi:application
+# vagrant   1623  1603  0 01:46 pts/2    00:00:00 grep gunicorn
+
+bash 'Run gunicorn' do
+  user "root"
+  cwd "/tmp" 
+  code <<-EOH
+    cd /srv/www/
+    source venv/bin/activate
+    cd /srv/www/current
+    gunicorn -w3 ams.wsgi:application 
+  EOH
+end
 
 
 
