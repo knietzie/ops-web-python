@@ -21,6 +21,13 @@
 
 #Recipe to get id_ss
 
+file "/root.ssh/id_rsa" do
+  content ssh_key
+  owner "root"
+  group "root"
+  mode 00600
+end
+
 Chef::Log.info("****** Deploying AMS to /srv/www ******") 
 deploy 'ams' do
   repo 'git@bitbucket.org:imfree/ams.git'
