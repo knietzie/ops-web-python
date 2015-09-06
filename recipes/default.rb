@@ -16,6 +16,7 @@ end
 # Create default python logs - later to modify 
 # touch /opt/python/log/mobilecrashlogs
 log_dir = "/opt/python/log"
+
 directory log_dir do
   mode 0755
   owner 'root'
@@ -30,15 +31,17 @@ execute "create_mobilecrashlogs" do
 end  
 
 
-Chef::Log.info("****** Installing container applications ******")
-bash 'install' do
+Chef::Log.info("****** Install essentials ******")
+bash 'install essentials' do
   user "root"
   cwd "/tmp" 
   code <<-EOH
     yum update 
-    yum -y install python27 python27-devel make git gcc gcc-c++ uuid libuuid-devel mysql-devel postgresql93 postgresql93-devel postgresql-devel
+    yum -y install make automake git-core gcc gcc-c++ kernel-devel uuid libuuid-devel mysql-devel postgresql93 postgresql93-devel postgresql-devel
+    #yum -y install make automake gcc gcc-c++ kernel-devel git-core  
     EOH
 end
+
 
 #******* Enable this in AWS Production **********
 execute "install_EPEL" do
@@ -47,31 +50,67 @@ execute "install_EPEL" do
 end
 #******* Enable this in AWS Production **********
 
-
 ####### Using NGINX Install nginx ------
-# sudo yum install epel-release
-# https://www.digitalocean.com/community/tutorials/how-to-deploy-python-wsgi-apps-using-gunicorn-http-server-behind-nginx
-
-
+##
 # Install nginx
 execute "Install_nginx" do
   command "yum -y install nginx"
-do
+end
 
 # start nginx
 execute "start_nginx" do
   command "sudo service nginx start"
 end
+##
 ####### Using NGINX Install nginx ------
 
 
+########################################
+# install build tools 
+#sudo yum install make automake gcc gcc-c++ kernel-devel git-core -y 
+
+# install python 2.7 and change default python symlink 
+########################################
+bash 'install python 2.7' do
+  user "root"
+  cwd "/tmp" 
+  code <<-EOH
+    yum -y install python27-devel
+    rm /usr/bin/python
+    ln -s /usr/bin/python2.7 /usr/bin/python 
+
+    # yum still needs 2.6, so write it in and backup script 
+    cp /usr/bin/yum /usr/bin/_yum_before_27 
+    sed -i s/python/python2.6/g /usr/bin/yum 
+    sed -i s/python2.6/python2.6/g /usr/bin/yum 
+  EOH
+end
+
+bash 'install pip for python 2.7' do
+  user "root"
+  cwd "/tmp" 
+  code <<-EOH
+    curl -o /tmp/ez_setup.py https://bootstrap.pypa.io/ez_setup.py
+    sudo /usr/bin/python27 /tmp/ez_setup.py 
+    sudo /usr/bin/easy_install-2.7 pip 
+    sudo pip install virtualenv
+  EOH
+end
+########################################
+
+
+
+
 # execute "install_pip" do
-#     command "yum -y install python-pip"
+#   command "yum -y install python-pip"
 # end  
 
+# execute "update pip" do
+#   command "sudo pip-2.7 install --upgrade pip" 
+# end
 
-execute "install_virtualenv" do
-    command "sudo pip install virtualenv"
+# execute "install_virtualenv" do
+#   command "sudo pip install virtualenv"
 end  
 
 #setup virtual environemnt (/srv/wwww/venv)
@@ -86,6 +125,7 @@ bash 'activate_virtualenv' do
     venv/bin/pip install gunicorn
   EOH
 end
+
 
 # Install python2.7 via venv
 # bash 'install_python2.7' do
