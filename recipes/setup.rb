@@ -16,6 +16,7 @@ end
 # Create default python logs - later to modify 
 # touch /opt/python/log/mobilecrashlogs
 log_dir = "/opt/python/log"
+
 directory log_dir do
   mode 0755
   owner 'root'
@@ -56,7 +57,7 @@ end
 # Install nginx
 execute "Install_nginx" do
   command "yum -y install nginx"
-do
+end
 
 # start nginx
 execute "start_nginx" do
