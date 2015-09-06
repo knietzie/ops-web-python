@@ -36,7 +36,7 @@ bash 'install' do
   cwd "/tmp" 
   code <<-EOH
     yum update 
-    yum -y install httpd httpd-devel python python-devel python python27-devel make git gcc gcc-c++ uuid libuuid-devel mysql-devel postgresql93 postgresql93-devel postgresql-devel
+    yum -y install python27 python27-devel make git gcc gcc-c++ uuid libuuid-devel mysql-devel postgresql93 postgresql93-devel postgresql-devel
     EOH
 end
 
@@ -53,9 +53,10 @@ end
 # https://www.digitalocean.com/community/tutorials/how-to-deploy-python-wsgi-apps-using-gunicorn-http-server-behind-nginx
 
 
-execute "install Nginx webserver" do
+# Install nginx
+execute "Install_nginx" do
   command "yum -y install nginx"
-end
+do
 
 # start nginx
 execute "start_nginx" do
@@ -68,55 +69,6 @@ end
 #     command "yum -y install python-pip"
 # end  
 
-# execute "update_pip" do
-#     command "sudo pip install --upgrade pip"
-# end  
-
-# execute "install_mod_wsgi" do
-#     command "yum -y install mod_wsgi"
-# end  
-
-# execute "Load_mod_wsgi module" do
-#     command "echo 'LoadModule wsgi_module modules/mod_wsgi.so' > /etc/httpd/conf.d/wsgi.conf"
-# end    
-
-#Use WSGI.conf.erb template
-# template "/etc/httpd/conf.d/wsgi.conf" do
-#   source "wsgi.conf.erb"
-# end
-
-###  ---------- WSGI SETTINHGS  ##############
-####  https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/modwsgi/
-
-# execute "wsgi.conf" do
-#      command "echo 
-#      'WSGIScriptAlias / /srv/www/current/ams/wsgi.py
-#      WSGIPythonPath /srv/wwww/current
-
-#      <Directory /srv/www/current>
-#      <Files wsgi.py>
-#      Require all granted#
-#       </Files>
-#      </Directory>' > /etc/httpd/conf.d/wsgi.conf"
-#  end
-
-
-
-# Chef::Log.info("******Copying from index.html to replace standard http welcome pag.******")
-# cookbook_file '/var/www/html/index.py' do
-#    source 'index.py'
-#    mode '0644'
-# end
-
-# Chef::Log.info("****** Start Httpd ******")
-# service 'httpd' do
-#   action [ :disable, :stop ]
-# end
-
-# Install virtualenv via Pip
-# virtualenv venv
-# source venv/bin/activate
-#
 
 execute "install_virtualenv" do
     command "sudo pip install virtualenv"
