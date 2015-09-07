@@ -8,6 +8,7 @@ bash 'Run migrations' do
     source venv/bin/activate
     cd /srv/www/current
     ## 01_syncdb:
+    ## add hstore extension before running syncdb
     ./manage.py syncdb --noinput
     ## 03_collectstatic:
     ## 04_wsgipass:

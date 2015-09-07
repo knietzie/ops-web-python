@@ -16,8 +16,17 @@ end
 # Create default python logs - later to modify 
 # touch /opt/python/log/mobilecrashlogs
 log_dir = "/opt/python/log"
-
 directory log_dir do
+  mode 0755
+  owner 'root'
+  group 'root'
+  recursive true
+  action :create
+end  
+
+
+ams_log_dir = "srv/www/shared/log"
+directory ams_log_dir do
   mode 0755
   owner 'root'
   group 'root'
